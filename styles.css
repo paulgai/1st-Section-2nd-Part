@@ -1,0 +1,482 @@
+:root {
+  --bg: #07111f;
+  --panel: rgba(5, 12, 23, 0.78);
+  --panel-soft: rgba(7, 17, 31, 0.72);
+  --line: rgba(155, 246, 255, 0.14);
+  --text: #e8f1ff;
+  --muted: #97aed0;
+  --accent: #61dafb;
+  --accent-strong: #9bf6ff;
+  --shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top, rgba(97, 218, 251, 0.18), transparent 38%),
+    linear-gradient(180deg, #0b1b31 0%, var(--bg) 100%);
+}
+
+.appShell {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 10px;
+  padding: 10px;
+}
+
+.contentPanel {
+  min-height: 0;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent),
+    var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.sceneLayout {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at center, rgba(97, 218, 251, 0.07), transparent 45%),
+    rgba(7, 17, 31, 0.48);
+}
+
+.audioPanel {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 5;
+  padding: 8px 10px;
+  border: 1px solid rgba(155, 246, 255, 0.18);
+  border-radius: 14px;
+  background: rgba(7, 17, 31, 0.86);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(10px);
+}
+
+.audioControls {
+  display: grid;
+  grid-template-columns: 32px minmax(110px, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.audioPlayButton {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(155, 246, 255, 0.28);
+  border-radius: 50%;
+  background: rgba(97, 218, 251, 0.1);
+  color: var(--accent-strong);
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+.audioPlayButton:hover:not(:disabled) {
+  transform: scale(1.04);
+  border-color: rgba(155, 246, 255, 0.55);
+  background: rgba(97, 218, 251, 0.18);
+}
+
+.audioPlayButton:focus-visible,
+.audioProgress:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.audioPlayButton:disabled,
+.audioProgress:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.audioIcon {
+  width: 17px;
+  height: 17px;
+  display: block;
+  fill: currentColor;
+}
+
+.audioIcon[hidden] {
+  display: none;
+}
+
+.audioProgress {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.audioTime {
+  min-width: 72px;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.waveScene {
+  position: absolute;
+  inset: 0;
+  min-width: 0;
+  min-height: 0;
+}
+
+.waveScene[hidden] {
+  display: none;
+}
+
+#waveCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+  touch-action: none;
+}
+
+#waveCanvas:active {
+  cursor: grabbing;
+}
+
+.sceneHeading {
+  position: absolute;
+  top: 22px;
+  left: 24px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.35rem, 3vw, 2.3rem);
+  line-height: 1;
+}
+
+.fieldLegend {
+  position: absolute;
+  left: 24px;
+  bottom: 22px;
+  z-index: 2;
+  display: grid;
+  gap: 9px;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(7, 17, 31, 0.72);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 700;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+}
+
+.fieldLegend[hidden] {
+  display: none;
+}
+
+.fieldLegend span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legendLine {
+  /* ΥΠΟΜΝΗΜΑ: άλλαξε εδώ πάχος (height) και ένταση glow (box-shadow). */
+  width: 24px;
+  height: 3px;
+  display: inline-block;
+  border-radius: 99px;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.legendLine.electric {
+  /* Ίδιο χρώμα με το electricColor στο WAVE_LINE_STYLE του app.js. */
+  color: #ff5f66;
+  background: #ff5f66;
+}
+
+.legendLine.magnetic {
+  /* Ίδιο χρώμα με το magneticColor στο WAVE_LINE_STYLE του app.js. */
+  color: #6e9dff;
+  background: #6e9dff;
+}
+
+.interactionHint {
+  position: absolute;
+  right: 22px;
+  bottom: 18px;
+  z-index: 2;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  pointer-events: none;
+}
+
+.interactionHint span {
+  color: var(--accent-strong);
+  font-size: 1.05rem;
+}
+
+.visibleSpectrumDetail {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  z-index: 3;
+  width: min(500px, 44vw);
+  height: auto;
+  display: block;
+  transform: translateX(-50%);
+  border: 1px solid rgba(155, 246, 255, 0.28);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.32);
+}
+
+.visibleSpectrumDetail[hidden] {
+  display: none;
+}
+
+.spectrumFooter {
+  width: 100%;
+  padding: 12px 22px 10px;
+  border: 1px solid rgba(155, 246, 255, 0.18);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent),
+    var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.spectrumHeader {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.spectrumDirection {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.spectrumDirectionEnd {
+  text-align: right;
+}
+
+.spectrumRegion {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+#spectrumRegion {
+  color: var(--accent-strong);
+}
+
+.spectrumFooter #wavelengthSlider {
+  width: 100%;
+  display: block;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+#wavelengthSlider:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.spectrumTicks {
+  position: relative;
+  height: 15px;
+  margin: 0 8px;
+}
+
+.spectrumTick {
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  width: 1px;
+  height: 15px;
+  transform: translateX(-50%);
+  background: rgba(155, 246, 255, 0.62);
+}
+
+.visibleSpectrumImage {
+  position: absolute;
+  top: 0;
+  height: 15px;
+  display: block;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.webglError {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  width: min(420px, 80%);
+  margin: 0;
+  color: #ffb4a0;
+  text-align: center;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 560px) {
+  .appShell {
+    padding: 8px;
+  }
+
+  .contentPanel {
+    min-height: 0;
+    padding: 12px;
+  }
+
+  .sceneLayout {
+    min-height: 0;
+  }
+
+  .audioPanel {
+    top: 10px;
+    right: 10px;
+  }
+
+  .sceneHeading {
+    top: 72px;
+    left: 16px;
+  }
+
+  .fieldLegend {
+    left: 12px;
+    bottom: 12px;
+  }
+
+  .interactionHint {
+    display: none;
+  }
+
+  .visibleSpectrumDetail {
+    bottom: 88px;
+    width: min(520px, calc(100% - 32px));
+  }
+
+  .spectrumFooter {
+    padding: 10px 12px 8px;
+  }
+
+  .spectrumHeader {
+    grid-template-areas:
+      "region region"
+      "start end";
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .spectrumDirection:first-child {
+    grid-area: start;
+  }
+
+  .spectrumDirectionEnd {
+    grid-area: end;
+  }
+
+  .spectrumDirection {
+    font-size: 0.65rem;
+  }
+
+  .spectrumRegion {
+    grid-area: region;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+}
+
+/* Κινητό σε οριζόντια προβολή: το switch μπαίνει κάτω από τον τίτλο. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .sceneHeading {
+    top: 14px;
+    left: 16px;
+  }
+
+  .sceneHeading h1 {
+    font-size: 1.35rem;
+  }
+
+  .audioPanel {
+    top: 76px;
+    right: auto;
+    left: 16px;
+  }
+}
+
+/* Fallback για mobile browsers/embedded previews που δεν αναφέρουν σωστά
+   το orientation: το switch παραμένει πάντα κάτω από το sceneHeading. */
+@media (max-width: 780px) {
+  .sceneHeading {
+    top: 14px;
+    left: 16px;
+  }
+
+  .sceneHeading h1 {
+    font-size: 1.35rem;
+  }
+
+  .audioPanel {
+    top: 76px;
+    right: auto;
+    left: 16px;
+  }
+}
