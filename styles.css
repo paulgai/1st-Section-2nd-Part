@@ -290,6 +290,10 @@ h1 {
   vector-effect: non-scaling-stroke;
 }
 
+.spectrumZoomLines[hidden] {
+  display: none;
+}
+
 .spectrumHeader {
   display: grid;
   grid-template-columns: 1fr auto 1fr;

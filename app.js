@@ -207,7 +207,7 @@ function updateWavelengthControl() {
   spectrumRegion.value = region;
   const isVisibleSpectrum = region === "Ορατό φως";
   visibleSpectrumZoom.hidden = !isVisibleSpectrum;
-  spectrumZoomLines.hidden = !isVisibleSpectrum;
+  spectrumZoomLines.toggleAttribute("hidden", !isVisibleSpectrum);
   if (isVisibleSpectrum) requestAnimationFrame(updateSpectrumZoomLines);
   wavelengthSlider.setAttribute("aria-valuetext", region);
 }
