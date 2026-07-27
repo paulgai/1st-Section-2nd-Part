@@ -67,14 +67,6 @@
               <span><i class="legendLine magnetic"></i>Μαγνητικό πεδίο B</span>
             </div>
 
-            <img
-              class="visibleSpectrumDetail"
-              id="visibleSpectrumDetail"
-              src="spectrum_large.png"
-              alt="Αναλυτική απεικόνιση του ορατού φάσματος από 400 έως 800 νανόμετρα"
-              hidden
-            >
-
             <p class="interactionHint">
               <span aria-hidden="true">↻</span> Σύρε για περιστροφή · Ροδέλα για zoom
             </p>
@@ -85,17 +77,24 @@
           </div>
 
         </div>
-      </section>
-
-      <footer class="spectrumFooter" aria-label="Έλεγχος ηλεκτρομαγνητικού φάσματος">
-        <div class="spectrumHeader">
-          <span class="spectrumDirection">Μικρό μήκος κύματος</span>
-          <p class="spectrumRegion">
-            Περιοχή φάσματος:
-            <output id="spectrumRegion" for="wavelengthSlider"></output>
-          </p>
-          <span class="spectrumDirection spectrumDirectionEnd">Μεγάλο μήκος κύματος</span>
+        <div class="visibleSpectrumZoom" id="visibleSpectrumZoom" hidden>
+          <img
+            class="visibleSpectrumDetail"
+            id="visibleSpectrumDetail"
+            src="spectrum_large.png"
+            alt="Μεγέθυνση του ορατού φάσματος από 400 έως 800 νανόμετρα"
+          >
         </div>
+        <svg
+          class="spectrumZoomLines"
+          id="spectrumZoomLines"
+          aria-hidden="true"
+          hidden
+        >
+          <line id="spectrumZoomLineStart"></line>
+          <line id="spectrumZoomLineEnd"></line>
+        </svg>
+        <div id="spectrumTicks" class="spectrumTicks" aria-hidden="true"></div>
         <input
           id="wavelengthSlider"
           type="range"
@@ -106,8 +105,15 @@
           aria-label="Ηλεκτρομαγνητικό φάσμα με αύξηση του μήκους κύματος"
           aria-describedby="spectrumRegion"
         >
-        <div id="spectrumTicks" class="spectrumTicks" aria-hidden="true"></div>
-      </footer>
+        <div class="spectrumHeader">
+          <span class="spectrumDirection">Μικρό μήκος κύματος</span>
+          <p class="spectrumRegion">
+            Περιοχή φάσματος:
+            <output id="spectrumRegion" for="wavelengthSlider"></output>
+          </p>
+          <span class="spectrumDirection spectrumDirectionEnd">Μεγάλο μήκος κύματος</span>
+        </div>
+      </section>
     </main>
   </body>
 </html>

@@ -15,7 +15,12 @@ const pauseIcon = document.querySelector("#pauseIcon");
 const wavelengthSlider = document.querySelector("#wavelengthSlider");
 const spectrumRegion = document.querySelector("#spectrumRegion");
 const spectrumTicks = document.querySelector("#spectrumTicks");
+const contentPanel = document.querySelector(".contentPanel");
+const visibleSpectrumZoom = document.querySelector("#visibleSpectrumZoom");
 const visibleSpectrumDetail = document.querySelector("#visibleSpectrumDetail");
+const spectrumZoomLines = document.querySelector("#spectrumZoomLines");
+const spectrumZoomLineStart = document.querySelector("#spectrumZoomLineStart");
+const spectrumZoomLineEnd = document.querySelector("#spectrumZoomLineEnd");
 let isSeekingAudio = false;
 
 const scene = new THREE.Scene();
@@ -38,10 +43,10 @@ scene.fog = new THREE.FogExp2(0x07111f, 0.025);
 const WAVE_LINE_STYLE = {
   electricColor: 0xff5f66,
   magneticColor: 0x6e9dff,
-  coreWidth: 3,
+  coreWidth: 2,
   innerGlowWidth: 0,
-  innerGlowOpacity: 0.14,
-  outerGlowWidth: 12,
+  innerGlowOpacity: 0.02,
+  outerGlowWidth: 6,
   outerGlowOpacity: 0.02,
 };
 
@@ -155,6 +160,38 @@ function renderSpectrumTicks() {
     .join("");
 
   spectrumTicks.innerHTML = visibleSpectrumImage + ticks;
+  requestAnimationFrame(updateSpectrumZoomLines);
+}
+
+function updateSpectrumZoomLines() {
+  const smallSpectrum = spectrumTicks.querySelector(".visibleSpectrumImage");
+  if (
+    !smallSpectrum ||
+    !visibleSpectrumDetail.complete ||
+    visibleSpectrumZoom.hidden
+  ) return;
+
+  const panelBounds = contentPanel.getBoundingClientRect();
+  const smallBounds = smallSpectrum.getBoundingClientRect();
+  const smallCenter = smallBounds.left + smallBounds.width / 2;
+
+  visibleSpectrumZoom.style.left = `${smallCenter - panelBounds.left}px`;
+
+  const detailBounds = visibleSpectrumDetail.getBoundingClientRect();
+  const detailBottom = detailBounds.bottom - panelBounds.top;
+  const smallTop = smallBounds.top - panelBounds.top;
+
+  spectrumZoomLines.setAttribute("viewBox", `0 0 ${panelBounds.width} ${panelBounds.height}`);
+
+  spectrumZoomLineStart.setAttribute("x1", detailBounds.left - panelBounds.left);
+  spectrumZoomLineStart.setAttribute("y1", detailBottom);
+  spectrumZoomLineStart.setAttribute("x2", smallBounds.left - panelBounds.left);
+  spectrumZoomLineStart.setAttribute("y2", smallTop);
+
+  spectrumZoomLineEnd.setAttribute("x1", detailBounds.right - panelBounds.left);
+  spectrumZoomLineEnd.setAttribute("y1", detailBottom);
+  spectrumZoomLineEnd.setAttribute("x2", smallBounds.right - panelBounds.left);
+  spectrumZoomLineEnd.setAttribute("y2", smallTop);
 }
 
 function updateWavelengthControl() {
@@ -168,11 +205,16 @@ function updateWavelengthControl() {
     shortWavelengthInfluence,
   );
   spectrumRegion.value = region;
-  visibleSpectrumDetail.hidden = region !== "Ορατό φως";
+  const isVisibleSpectrum = region === "Ορατό φως";
+  visibleSpectrumZoom.hidden = !isVisibleSpectrum;
+  spectrumZoomLines.hidden = !isVisibleSpectrum;
+  if (isVisibleSpectrum) requestAnimationFrame(updateSpectrumZoomLines);
   wavelengthSlider.setAttribute("aria-valuetext", region);
 }
 
 wavelengthSlider.addEventListener("input", updateWavelengthControl);
+visibleSpectrumDetail.addEventListener("load", updateSpectrumZoomLines);
+new ResizeObserver(updateSpectrumZoomLines).observe(contentPanel);
 renderSpectrumTicks();
 updateWavelengthControl();
 
